@@ -103,14 +103,32 @@ class Player:
 
         return total_value
 
-    def am_i_bust(self):
+    def is_not_bust(self):
         self.set_card_value()
-        if self.card_value>21:
+        if self.card_value > 21:
+            return True
+        return False
+
+    def won(self):
+        self.set_card_value()
+        if self.card_value == 21:
             return True
         return False
 
 
 def play_black_jack():
+    def ask_player_to_draw():
+        while True:
+            try:
+                player_decision = int(input(
+                    "Do you want to draw another card?\nPrint only numbers\nOptions:"
+                    "\n-(1)See total of your own cards\n-(2)See total of your opponent's cards"
+                    "\n-(3)draw another card\n-(4)don't draw another card\n"))
+                if 1 <= player_decision <= 4:
+                    break
+            except ValueError:
+                print("Please print a valid number")
+
     deck = Deck()
     deck.shuffle()
 
@@ -123,7 +141,10 @@ def play_black_jack():
     drawn_card = deck.permanant_removal_pick_a_card(1)
     print("The dealer got a " + str(drawn_card))
     dealer = Player(drawn_card)
+    ask_player_to_draw()
 
+    while player.is_not_bust() and dealer.is_not_bust():
+        pass
 
 
 play_black_jack()
