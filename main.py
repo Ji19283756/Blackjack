@@ -98,7 +98,6 @@ class Player:
         total_value = 0
 
         for card in self.cards:
-            print(card)
             total_value += get_card_value(card)
 
         return total_value
@@ -117,7 +116,7 @@ class Player:
 
 
 def play_black_jack():
-    def ask_player_to_draw():
+    def ask_player_for_choice(enemy):
         while True:
             try:
                 player_decision = int(input(
@@ -125,23 +124,43 @@ def play_black_jack():
                     "\n-(1)See total of your own cards\n-(2)See total of your opponent's cards"
                     "\n-(3)draw another card\n-(4)don't draw another card\n"))
                 if 1 <= player_decision <= 4:
-                    break
+                    while True:
+                        if player_decision == 1:
+                            print("Your total is " + str(player.card_value))
+                        elif player_decision == 2:
+                            print("Your opponent's total is " + str(enemy.card_value))
+                        elif player_decision == 3:
+                            print("The dealer draws another card")
+                            player.cards += deck.permanant_removal_pick_a_card(1)
+                            print(player.cards)
+
+                        break
+                    if player_decision == 3 or player_decision == 4:
+                        break
+
             except ValueError:
                 print("Please print a valid number")
+
+
+
+        return
+
+
 
     deck = Deck()
     deck.shuffle()
 
     print("The dealer draws a card")
     drawn_card = deck.permanant_removal_pick_a_card(1)
-    print("You got a " + str(drawn_card))
+    print("You got " + str(drawn_card[0]) + "\n")
     player = Player(drawn_card)
 
     print("The dealer draws a card")
     drawn_card = deck.permanant_removal_pick_a_card(1)
-    print("The dealer got a " + str(drawn_card))
+    print("The dealer got " + str(drawn_card[0]) + "\n")
     dealer = Player(drawn_card)
-    ask_player_to_draw()
+
+    player_choice = ask_player_for_choice(dealer)
 
     while player.is_not_bust() and dealer.is_not_bust():
         pass
