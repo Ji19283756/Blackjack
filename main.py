@@ -81,9 +81,31 @@ class Deck:
         return value
 
 
+class Player:
+    def __init__(self, cards):
+        self.cards = [cards]
+        self.card_value = self.set_card_value()
+
+    def set_card_value(self):
+        total_value = 0
+
+        for card in self.cards:
+            total_value += deck.get_card_value(card)
+
+        return total_value
+
+
+def play_black_jack():
+    print("Dealer draws a card")
+    player = Player()
+
+
 deck = Deck()
 deck.shuffle()
 piles = deck.make_piles(15)
+play_black_jack()
+
+
 # for pile in piles:
 #    print(pile)
 #    print(len(pile))
