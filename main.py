@@ -96,15 +96,18 @@ class Player:
 
     def set_card_value(self):
         total_value = 0
-
+        # print("set_card_value")
         for card in self.cards:
+            #    print(card)
             total_value += get_card_value(card)
-
+        #    print(get_card_value(card))
+        self.card_value = total_value
+        # print("total"+str(total_value))
         return total_value
 
     def is_not_bust(self):
         self.set_card_value()
-        if self.card_value > 21:
+        if self.card_value < 22:
             return True
         return False
 
@@ -117,35 +120,45 @@ class Player:
 
 def play_black_jack():
     def ask_player_for_choice(enemy):
+        game_will_be_done = False
         while True:
             try:
                 player_decision = int(input(
                     "Do you want to draw another card?\nPrint only numbers\nOptions:"
                     "\n-(1)See total of your own cards\n-(2)See total of your opponent's cards"
-                    "\n-(3)draw another card\n-(4)don't draw another card\n"))
-                if 1 <= player_decision <= 4:
+                    "\n-(3)draw another card\n-(4)don't draw another card\n-(5)End game, opponent has"
+                    " options to draw one more time\n"))
+                if 1 <= player_decision <= 5:
                     while True:
+                        print()
                         if player_decision == 1:
-                            print("Your total is " + str(player.card_value))
+                            print("Your cards are:")
+                            for card in player.cards:
+                                print(card)
+                            print("This means that your total is " + str(player.card_value) + "\n")
                         elif player_decision == 2:
-                            print("Your opponent's total is " + str(enemy.card_value))
+                            print("Your opponent's cards are:")
+                            for card in enemy.cards:
+                                print(card)
+                            print("Your opponent's total is " + str(enemy.card_value) + "\n")
                         elif player_decision == 3:
                             print("The dealer draws another card")
                             player.cards += deck.permanant_removal_pick_a_card(1)
-                            print(player.cards)
-
+                            print("You got " + str(player.cards[-1]))
+                            player.set_card_value()
+                        elif player_decision == 4:
+                            print("You decide not to draw another card")
+                        elif player_decision == 5:
+                            print("You decide to end the game")
+                            game_will_be_done = True
                         break
-                    if player_decision == 3 or player_decision == 4:
+                    #if player_decision == 3 or player_decision == 4 or player_decision == 5:
+                    if 3 <= player_decision <= 5:
                         break
 
             except ValueError:
                 print("Please print a valid number")
-
-
-
-        return
-
-
+        return game_will_be_done
 
     deck = Deck()
     deck.shuffle()
@@ -159,11 +172,27 @@ def play_black_jack():
     drawn_card = deck.permanant_removal_pick_a_card(1)
     print("The dealer got " + str(drawn_card[0]) + "\n")
     dealer = Player(drawn_card)
+    game_will_be_done = False
+    while True:
+        if game_will_be_done:
+            break
 
-    player_choice = ask_player_for_choice(dealer)
+        if player.is_not_bust():
+            game_will_be_done = ask_player_for_choice(dealer)
+        else:
+            print("You went bust, your cards were:")
+            for card in player.cards:
+                print(card)
+            print("Giving you a total of " + str(player.card_value) + " which means you lose")
+            break
+        if player.won():
+            print("You win")
+            break
 
-    while player.is_not_bust() and dealer.is_not_bust():
-        pass
+        # if dealer.is_not_bust():
+        #    pass
+        # else:
+        #    break
 
 
 play_black_jack()
