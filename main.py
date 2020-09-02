@@ -18,9 +18,6 @@ class Deck:
              'The Queen Of Hearts', 'The Queen Of Spades', 'The Queen Of Clubs', 'The Queen Of Diamonds',
              'The King Of Hearts', 'The King Of Spades', 'The King Of Clubs', 'The King Of Diamonds']
 
-        self.value_dict = {'Ac': 14, 'Tw': 2, 'Th': 3, 'Fo': 4, 'Fi': 5, 'Si': 6, 'Se': 7, 'Ei': 8,
-                           'Ni': 9, 'Te': 10, 'Ja': 11, 'Qu': 12, 'Ki': 13}
-
         if joker:
             self.cards += ["Joker", "Joker"]
 
@@ -48,6 +45,15 @@ class Deck:
 
         return taken_cards
 
+    def permanant_removal_pick_a_card(self, amount):
+        drawn_card = []
+        for x in range(amount):
+            random_card_position = random.randint(0, len(self.cards) - 1)
+            drawn_card += [self.cards[random_card_position]]
+            self.cards.pop(random_card_position)
+
+        return drawn_card
+
     def make_piles(self, amount):
 
         if amount > len(self.cards):
@@ -73,38 +79,54 @@ class Deck:
 
         return all_piles
 
-    def get_card_value(self, name):
 
-        two_first_letters = name[4:6]
-        value = self.value_dict[two_first_letters]
+def get_card_value(name):
+    value_dict = {'Ac': 14, 'Tw': 2, 'Th': 3, 'Fo': 4, 'Fi': 5, 'Si': 6, 'Se': 7, 'Ei': 8,
+                  'Ni': 9, 'Te': 10, 'Ja': 11, 'Qu': 12, 'Ki': 13}
+    two_first_letters = name[4:6]
+    value = value_dict[two_first_letters]
 
-        return value
+    return value
 
 
 class Player:
     def __init__(self, cards):
-        self.cards = [cards]
+        self.cards = cards
         self.card_value = self.set_card_value()
 
     def set_card_value(self):
         total_value = 0
 
         for card in self.cards:
-            total_value += deck.get_card_value(card)
+            print(card)
+            total_value += get_card_value(card)
 
         return total_value
 
+    def am_i_bust(self):
+        self.set_card_value()
+        if self.card_value>21:
+            return True
+        return False
+
 
 def play_black_jack():
-    print("Dealer draws a card")
-    player = Player()
+    deck = Deck()
+    deck.shuffle()
+
+    print("The dealer draws a card")
+    drawn_card = deck.permanant_removal_pick_a_card(1)
+    print("You got a " + str(drawn_card))
+    player = Player(drawn_card)
+
+    print("The dealer draws a card")
+    drawn_card = deck.permanant_removal_pick_a_card(1)
+    print("The dealer got a " + str(drawn_card))
+    dealer = Player(drawn_card)
 
 
-deck = Deck()
-deck.shuffle()
-piles = deck.make_piles(15)
+
 play_black_jack()
-
 
 # for pile in piles:
 #    print(pile)
