@@ -25,13 +25,13 @@ class Deck:
         shuffle(self.cards)
         return self.cards
 
-    def pick_a_card(self, amount, replace=True, taken_cards=[]):
+    def pick_a_card(self, amount, replace=True):
         taken_cards = sample(self.cards, amount)
 
         return taken_cards
 
     def permanant_removal_pick_a_card(self, amount):
-        drawn_card = sample(self.cards,amount)
+        drawn_card = sample(self.cards, amount)
         for card in drawn_card:
             self.cards.remove(card)
 
@@ -196,14 +196,14 @@ def play_black_jack():
             print("You win")
         elif 21 >= dealer1.card_value > player1.card_value:
             print("The dealer won")
-        elif player1.card_value>21:
+        elif player1.card_value > 21:
             print("You go bust\nYou Lose and the Dealer wins")
-        elif dealer1.card_value>21:
+        elif dealer1.card_value > 21:
             print("The dealer goes bust\nYou Win")
         else:
             print("Its a tie")
+
     evaluate_winner(player, dealer)
 
 
 play_black_jack()
-
