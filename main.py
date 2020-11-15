@@ -1,5 +1,5 @@
-import random
-from random import choice, shuffle
+from random import choice, shuffle, sample
+
 
 class Deck:
     def __init__(self, joker=False):
@@ -26,31 +26,21 @@ class Deck:
         return self.cards
 
     def pick_a_card(self, amount, replace=True, taken_cards=[]):
-
-        while len(taken_cards) < amount:
-            random_card_position = random.randint(0, len(self.cards) - 1)
-            drawn_card = self.cards[random_card_position]
-
-            if not replace and drawn_card in taken_cards:
-                continue
-
-            taken_cards += [drawn_card]
+        taken_cards = sample(self.cards, amount)
 
         return taken_cards
 
     def permanant_removal_pick_a_card(self, amount):
-        drawn_card = []
-        for x in range(amount):
-            random_card_position = random.randint(0, len(self.cards) - 1)
-            drawn_card += [self.cards[random_card_position]]
-            self.cards.pop(random_card_position)
+        drawn_card = sample(self.cards,amount)
+        for card in drawn_card:
+            self.cards.remove(card)
 
         return drawn_card
 
     def make_piles(self, amount):
 
         if amount > len(self.cards):
-            print("I can't make " + str(amount) + " piles")
+            print(f"I can't make {amount} piles")
             return
 
         all_piles = []
@@ -88,27 +78,19 @@ class Player:
         self.card_value = self.set_card_value()
 
     def set_card_value(self):
-        total_value = 0
-        # print("set_card_value")
-        for card in self.cards:
-            # print("card: "+card)
-            total_value += get_card_value(card)
-        #    print(get_card_value(card))
+        total_value = sum(map(get_card_value, self.cards))
+        # for card in self.cards:
+        #     total_value += get_card_value(card)
         self.card_value = total_value
-        # print("total"+str(total_value))
         return total_value
 
     def is_not_bust(self):
         self.set_card_value()
-        if self.card_value < 22:
-            return True
-        return False
+        return self.card_value < 22
 
     def won(self):
         self.set_card_value()
-        if self.card_value == 21:
-            return True
-        return False
+        return self.card_value == 21
 
 
 def play_black_jack():
@@ -120,25 +102,25 @@ def play_black_jack():
                     "Do you want to draw another card?\nPrint only numbers\nOptions:"
                     "\n-(1)See total of your own cards\n-(2)See total of your opponent's cards"
                     "\n-(3)draw another card\n-(4)don't draw another card\n-(5)End game, opponent has"
-                    " options to draw one more time\n"))
+                    " options to draw one more time\n").strip())
                 if 1 <= player_decision <= 5:
                     print()
                     if player_decision == 1:
                         print("Your cards are:")
                         for card in player.cards:
                             print(card)
-                        print("This means that your total is " + str(player.card_value) + "\n")
+                        print(f"This means that your total is {player.card_value}\n")
                     elif player_decision == 2:
                         print("Your opponent's cards are:")
                         for card in enemy.cards:
                             print(card)
-                        print("Your opponent's total is " + str(enemy.card_value) + "\n")
+                        print(f"Your opponent's total is {enemy.card_value}\n")
                     elif player_decision == 3:
                         print("The dealer draws another card")
                         player.cards += deck.permanant_removal_pick_a_card(1)
-                        print("You got " + str(player.cards[-1]))
+                        print(f"You got {player.cards[-1]}")
                         player.set_card_value()
-                        print("This gives you a total card value of " + str(player.card_value))
+                        print(f"This gives you a total card value of {player.card_value}")
                     elif player_decision == 4:
                         print("You decide not to draw another card")
                     elif player_decision == 5:
@@ -160,8 +142,7 @@ def play_black_jack():
             print("The dealer draws another card")
             self_dealer.cards += deck.permanant_removal_pick_a_card(1)
             self_dealer.set_card_value()
-            print("The dealer got " + str(player.cards[-1]) + "\nThis gives him a total value of "
-                  + str(self_dealer.card_value))
+            print(f"The dealer got {player.cards[-1]}\nThis gives him a total value of {self_dealer.card_value}")
 
         elif dealer_amount >= 19:
             print("The dealer decides to end the game")
@@ -174,12 +155,12 @@ def play_black_jack():
 
     print("The dealer draws a card")
     drawn_card = deck.permanant_removal_pick_a_card(1)
-    print("You got " + str(drawn_card[0]) + "\n")
+    print(f"You got {drawn_card[0]}\n")
     player = Player(drawn_card)
 
     print("The dealer draws a card")
     drawn_card = deck.permanant_removal_pick_a_card(1)
-    print("The dealer got " + str(drawn_card[0]) + "\n")
+    print(f"The dealer got {drawn_card[0]}\n")
     dealer = Player(drawn_card)
 
     player_game_will_be_done = False
@@ -204,7 +185,6 @@ def play_black_jack():
 
         if dealer.is_not_bust():
             dealer_game_will_be_done = dealer_ai(player, dealer)
-
         else:
             break
 
@@ -224,11 +204,6 @@ def play_black_jack():
             print("Its a tie")
     evaluate_winner(player, dealer)
 
+
 play_black_jack()
 
-
-
-
-# for pile in piles:
-#    print(pile)
-#    print(len(pile))
